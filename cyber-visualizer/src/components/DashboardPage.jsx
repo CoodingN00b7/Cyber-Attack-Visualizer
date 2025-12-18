@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis } from 'recharts';
 
-// --- MOCK DATA: INDIAN CYBER THREAT LANDSCAPE ---
 const INDIA_REGIONAL_DATA = [
   { name: 'MH', attacks: 4500 }, { name: 'DL', attacks: 3200 },
   { name: 'KA', attacks: 2800 }, { name: 'TN', attacks: 2100 },
@@ -20,7 +19,7 @@ const ATTACK_VECTORS = [
     severity: "CRITICAL",
     impact: "High operational disruption in Power & Healthcare sectors. Data encryption and extortion.",
     icon: <Database size={24} className="text-red-500" />,
-    trendColor: "#ef4444", // red
+    trendColor: "#ef4444", 
     trendData: [10, 25, 40, 35, 50, 65, 80]
   },
   {
@@ -29,7 +28,7 @@ const ATTACK_VECTORS = [
     severity: "HIGH",
     impact: "Widespread financial loss among citizens. SMS/Email lures targeting banking credentials.",
     icon: <CreditCard size={24} className="text-amber-500" />,
-    trendColor: "#f59e0b", // amber
+    trendColor: "#f59e0b",
     trendData: [60, 55, 70, 65, 80, 75, 90]
   },
   {
@@ -38,7 +37,7 @@ const ATTACK_VECTORS = [
     severity: "CRITICAL",
     impact: "Data theft from government and defense sectors. Long-term stealth network infiltration.",
     icon: <Landmark size={24} className="text-emerald-500" />,
-    trendColor: "#10b981", // emerald
+    trendColor: "#10b981", 
     trendData: [20, 20, 25, 25, 30, 35, 40]
   },
   {
@@ -47,7 +46,7 @@ const ATTACK_VECTORS = [
     severity: "MEDIUM",
     impact: "Service outages for e-governance portals and telecom providers during peak times.",
     icon: <Server size={24} className="text-blue-500" />,
-    trendColor: "#3b82f6", // blue
+    trendColor: "#3b82f6", 
     trendData: [30, 80, 20, 90, 40, 70, 50]
   },
   {
@@ -56,7 +55,7 @@ const ATTACK_VECTORS = [
     severity: "RISING",
     impact: "Compromise of smart devices (cameras, routers) used to launch secondary attacks.",
     icon: <Zap size={24} className="text-purple-500" />,
-    trendColor: "#a855f7", // purple
+    trendColor: "#a855f7", 
     trendData: [15, 25, 35, 45, 55, 65, 75]
   },
   {
@@ -65,7 +64,7 @@ const ATTACK_VECTORS = [
     severity: "HIGH",
     impact: "Malware introduced via third-party software vendors affecting multiple downstream organizations.",
     icon: <ShieldAlert size={24} className="text-red-400" />,
-    trendColor: "#f87171", // light red
+    trendColor: "#f87171", 
     trendData: [5, 10, 8, 20, 15, 30, 45]
   },
 ];
@@ -87,9 +86,8 @@ const DashboardPage = () => {
   return (
     <motion.div 
       initial="hidden" animate="visible" variants={containerVariants}
-      className="pt-24 pb-12 px-4 max-w-7xl mx-auto"
+      className="pt-12 pb-12 px-4 max-w-7xl mx-auto"
     >
-      {/* Header */}
       <motion.div variants={itemVariants} className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tighter flex items-center gap-3 mb-2">
@@ -103,7 +101,6 @@ const DashboardPage = () => {
         </div>
       </motion.div>
 
-      {/* Top Summary Section (Regional Heatmap Simulation) */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
          <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
            <h3 className="text-white font-bold mb-4 flex items-center gap-2"><Server size={18} className="text-blue-400"/> Attacks by Region (Last 24h)</h3>
@@ -126,8 +123,6 @@ const DashboardPage = () => {
          </div>
       </motion.div>
 
-
-      {/* Main Attack Vector Grid (The requested UI style) */}
       <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-emerald-500">Active Threat Vectors & Severity</h2>
       <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {ATTACK_VECTORS.map((attack) => (
@@ -136,7 +131,6 @@ const DashboardPage = () => {
             variants={itemVariants}
             className={`bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-${attack.severity === 'CRITICAL' ? 'red' : attack.severity === 'HIGH' ? 'amber' : 'emerald'}-500/30 transition-all group relative overflow-hidden`}
           >
-            {/* Cyber Grid Background Effect on Hover */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
               style={{ backgroundImage: `radial-gradient(circle at 2px 2px, ${attack.trendColor} 1px, transparent 0)`, backgroundSize: '20px 20px' }}>
             </div>
@@ -160,7 +154,6 @@ const DashboardPage = () => {
 
             <p className="text-slate-400 text-sm mb-6 h-16 relative z-10">{attack.impact}</p>
 
-            {/* Mini Trend Chart within Card */}
             <div className="h-20 relative z-10">
                <div className="text-xs text-slate-500 mb-1 flex justify-between">
                  <span>7-Day Trend</span>
