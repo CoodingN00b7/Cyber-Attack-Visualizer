@@ -12,7 +12,7 @@ const THREAT_DATA = Array.from({ length: 20 }, (_, i) => ({
   threats: Math.floor(Math.random() * 100) + 20,
 }));
 
-// --- COMPONENT: SEARCH SECTION WITH TABS ---
+// --- HERO SECTION (SEARCH) ---
 const HeroSection = ({ onSearch, isSearching }) => {
   const [input, setInput] = useState('');
   const [searchType, setSearchType] = useState('EMAIL'); 
@@ -32,7 +32,6 @@ const HeroSection = ({ onSearch, isSearching }) => {
 
   return (
     <div className="relative z-10 flex flex-col items-center justify-center pt-20 pb-12 text-center px-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
-      {/* Title Section */}
       <div className="mb-10">
         <div className="inline-flex items-center px-3 py-1 mb-6 border rounded-full border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-mono tracking-wider">
           <span className="w-2 h-2 mr-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -46,9 +45,7 @@ const HeroSection = ({ onSearch, isSearching }) => {
         </p>
       </div>
 
-      {/* Search Container */}
       <div className="w-full max-w-3xl bg-slate-900/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-4 shadow-2xl shadow-emerald-900/20">
-        {/* TABS */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4">
           {searchOptions.map((opt) => (
             <button
@@ -65,7 +62,6 @@ const HeroSection = ({ onSearch, isSearching }) => {
           ))}
         </div>
 
-        {/* Input Form */}
         <form onSubmit={handleSubmit} className="relative flex flex-col md:flex-row gap-2">
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -97,10 +93,9 @@ const HeroSection = ({ onSearch, isSearching }) => {
   );
 };
 
-// --- COMPONENT: STATS GRID ---
+// --- STATS GRID ---
 const StatsGrid = () => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4 mb-20 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
-    {/* Card 1 */}
     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-emerald-500/30 transition-colors">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 text-emerald-400">
@@ -124,7 +119,6 @@ const StatsGrid = () => (
       </div>
     </div>
 
-    {/* Card 2 */}
     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-blue-500/30 transition-colors flex flex-col justify-center">
       <div className="flex items-center gap-2 text-blue-400 mb-2">
         <Globe size={20} /> <span className="font-bold tracking-wide">GLOBAL INDEX</span>
@@ -138,7 +132,6 @@ const StatsGrid = () => (
       <p className="text-xs text-slate-500 mt-2">Records updated: Just now</p>
     </div>
 
-    {/* Card 3 */}
     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-amber-500/30 transition-colors flex flex-col justify-center">
       <div className="flex items-center gap-2 text-amber-500 mb-2">
         <Terminal size={20} /> <span className="font-bold tracking-wide">LATEST INTELLIGENCE</span>
@@ -157,7 +150,7 @@ const StatsGrid = () => (
   </div>
 );
 
-// --- COMPONENT: RESULTS DISPLAY ---
+// --- RESULT CARD ---
 const ResultCard = ({ result, reset }) => {
   const isSafe = result.status === 'Safe';
   
@@ -231,7 +224,6 @@ const ResultCard = ({ result, reset }) => {
   );
 };
 
-// --- COMPONENT: SCANNING ANIMATION ---
 const ScanningOverlay = () => (
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md">
     <div className="relative w-32 h-32 mb-8">
@@ -244,17 +236,17 @@ const ScanningOverlay = () => (
   </div>
 );
 
-// --- MAIN HOME PAGE COMPONENT ---
+// --- MAIN EXPORT ---
 const HomePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
 
-  // --- CONNECTED TO BACKEND ---
   const handleSearch = async (identifier, type) => {
     setIsSearching(true);
     setResult(null);
 
     try {
+      // NOTE: Replace localhost:5000 with your Render URL when deploying backend
       const response = await fetch('http://localhost:5000/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
