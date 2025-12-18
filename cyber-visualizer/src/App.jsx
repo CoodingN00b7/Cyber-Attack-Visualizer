@@ -2,14 +2,14 @@ import React from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Shield, LayoutDashboard, Home } from 'lucide-react';
 
-// Import the page components we created
+// Import Page Components
 import HomePage from './components/HomePage';
 import DashboardPage from './components/DashboardPage';
 
 function App() {
   const location = useLocation();
 
-  // Helper function to highlight the active tab
+  // Helper to highlight the active tab
   const isActive = (path) => {
     return location.pathname === path 
       ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.2)]' 
@@ -40,7 +40,7 @@ function App() {
           </div>
         </div>
 
-        {/* Navigation Links (Router) */}
+        {/* Navigation Links */}
         <div className="flex items-center gap-3 text-sm font-bold tracking-wide">
           <Link to="/" className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${isActive('/')}`}>
              <Home size={18} /> 
