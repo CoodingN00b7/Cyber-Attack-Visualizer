@@ -6,13 +6,11 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
 
-// --- MOCK DATA FOR CHART ---
 const THREAT_DATA = Array.from({ length: 20 }, (_, i) => ({
   name: `T-${i}`,
   threats: Math.floor(Math.random() * 100) + 20,
 }));
 
-// --- HERO SECTION (SEARCH) ---
 const HeroSection = ({ onSearch, isSearching }) => {
   const [input, setInput] = useState('');
   const [searchType, setSearchType] = useState('EMAIL'); 
@@ -93,7 +91,6 @@ const HeroSection = ({ onSearch, isSearching }) => {
   );
 };
 
-// --- STATS GRID ---
 const StatsGrid = () => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4 mb-20 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-emerald-500/30 transition-colors">
@@ -150,7 +147,6 @@ const StatsGrid = () => (
   </div>
 );
 
-// --- RESULT CARD ---
 const ResultCard = ({ result, reset }) => {
   const isSafe = result.status === 'Safe';
   
@@ -236,7 +232,6 @@ const ScanningOverlay = () => (
   </div>
 );
 
-// --- MAIN EXPORT ---
 const HomePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState(null);
@@ -246,7 +241,7 @@ const HomePage = () => {
     setResult(null);
 
     try {
-      // NOTE: Replace localhost:5000 with your Render URL when deploying backend
+      // IF DEPLOYED, REPLACE 'http://localhost:5000' WITH YOUR RENDER URL
       const response = await fetch('http://localhost:5000/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
