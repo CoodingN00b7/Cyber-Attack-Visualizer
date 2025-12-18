@@ -1,4 +1,3 @@
-// controllers/scanController.js
 const crypto = require('crypto');
 
 // Simulate the logic from Chapter 7.5.1 (Privacy-Preserving Lookup)
