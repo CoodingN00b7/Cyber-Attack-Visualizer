@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  // CORRECT HOMEPAGE FOR YOUR REPO:
   "homepage": "https://CoodingN00b7.github.io/Cyber-Attack-Visualizer",
   "scripts": {
     "dev": "vite",
