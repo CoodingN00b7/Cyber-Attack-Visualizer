@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, Lock, Search, Shield, Smartphone, Mail, Globe2, BadgeInfo, RefreshCw, Database, ShieldAlert, Clock3, Fingerprint, FileSearch, BadgeCheck } from "lucide-react";
 import { useTheme } from "../ThemeContext";
 
@@ -87,34 +87,45 @@ function getResultPalette(result) {
 
   if (exposed || risk >= 60) {
     return {
-      header: "linear-gradient(135deg, #FF3B3B 0%, #A31515 48%, #3B0A0A 100%)",
+      header: "linear-gradient(135deg, #ff4d4d 0%, #b31217 52%, #3a090b 100%)",
       status: "red",
       progress: "bg-red-500",
       border: "rgba(255,59,59,.55)",
       badge: "bg-red-500/10 text-red-300 border-red-500/30",
-      leftStripe: "#FF3B3B"
+      leftStripe: "#FF3B3B",
+      glow: "0 0 0 1px rgba(255,77,77,.3), 0 26px 90px rgba(179,18,23,.46), inset 0 1px 0 rgba(255,255,255,.08)"
     };
   }
 
   if (risk > 30) {
     return {
-      header: "linear-gradient(135deg, #FFC857 0%, #FF8A00 52%, #C76A00 100%)",
+      header: "linear-gradient(135deg, #ffd45f 0%, #ff9a1f 50%, #6b3d03 100%)",
       status: "amber",
       progress: "bg-amber-500",
       border: "rgba(255,200,87,.5)",
       badge: "bg-amber-500/10 text-amber-300 border-amber-500/30",
-      leftStripe: "#FFC857"
+      leftStripe: "#FFC857",
+      glow: "0 0 0 1px rgba(255,200,87,.28), 0 22px 70px rgba(255,138,0,.38), inset 0 1px 0 rgba(255,255,255,.08)"
     };
   }
 
   return {
-    header: "linear-gradient(135deg, #00C2FF 0%, #0B84FF 55%, #00FF9C 100%)",
+    header: "linear-gradient(135deg, #1ef8a6 0%, #10b981 48%, #064e3b 100%)",
     status: "green",
     progress: "bg-emerald-500",
-    border: "rgba(0,194,255,.5)",
+    border: "rgba(16,185,129,.5)",
     badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-    leftStripe: "#00FF9C"
+    leftStripe: "#00FF9C",
+    glow: "0 0 0 1px rgba(16,185,129,.3), 0 24px 72px rgba(16,185,129,.4), inset 0 1px 0 rgba(255,255,255,.08)"
   };
+}
+
+function getResultTone(result) {
+  const risk = clampRisk(result?.risk);
+  const exposed = String(result?.status || "").toUpperCase() === "EXPOSED";
+  if (exposed || risk >= 60) return "high";
+  if (risk > 30) return "moderate";
+  return "safe";
 }
 
 async function hashValue(value = "") {
@@ -177,6 +188,7 @@ function maxLengthByType(type) {
 
 function Home() {
   const { dark } = useTheme();
+  const prefersReducedMotion = useReducedMotion();
   const [selectedType, setSelectedType] = useState("EMAIL");
   const [identifier, setIdentifier] = useState("");
   const [useLocalDb, setUseLocalDb] = useState(false);
@@ -186,6 +198,16 @@ function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [scanning, setScanning] = useState(0);
   const [privacyFingerprint, setPrivacyFingerprint] = useState("");
+
+  const lowPowerDevice = useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    const memory = Number(navigator.deviceMemory || 0);
+    const cpu = Number(navigator.hardwareConcurrency || 0);
+    const isAndroid = /android/i.test(navigator.userAgent || "");
+    return isAndroid && ((memory > 0 && memory <= 4) || (cpu > 0 && cpu <= 6));
+  }, []);
+
+  const useLiteMotion = prefersReducedMotion || lowPowerDevice;
 
   const PreventionItems = useMemo(() => PREVENTION[selectedType] || PREVENTION.EMAIL, [selectedType]);
 
@@ -328,14 +350,15 @@ function Home() {
   }, [identifier, selectedType, useLocalDb, validateInput]);
 
   const palette = getResultPalette(result);
+  const resultTone = getResultTone(result);
 
   return (
-    <main className="relative min-h-[calc(100vh-4.5rem)] md:min-h-[calc(100vh-6.5rem)] overflow-hidden px-3 pt-4 pb-3 sm:px-6 lg:px-8 flex flex-col" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
+    <main className="relative min-h-[calc(100vh-4.5rem)] md:min-h-[calc(100vh-6.5rem)] overflow-hidden px-3 pt-3 pb-3 sm:px-6 lg:px-8 flex flex-col" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
       <div
         aria-hidden="true"
         className={`pointer-events-none absolute inset-0 ${dark ? "opacity-100" : "opacity-80"}`}
       >
-        <div className={`absolute inset-0 ${dark ? "bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.12),transparent_30%),linear-gradient(rgba(148,163,184,0.09)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.09)_1px,transparent_1px)]" : "bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.12),transparent_30%),linear-gradient(rgba(148,163,184,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.08)_1px,transparent_1px)]"} bg-[size:100%_100%,100%_100%,26px_26px,26px_26px]`} />
+        <div className={`absolute inset-0 ${dark ? "bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.16),transparent_36%),radial-gradient(circle_at_90%_20%,rgba(56,189,248,0.11),transparent_34%),radial-gradient(circle_at_10%_100%,rgba(2,132,199,0.1),transparent_30%),linear-gradient(rgba(22,78,99,0.24)_1px,transparent_1px),linear-gradient(90deg,rgba(22,78,99,0.24)_1px,transparent_1px)]" : "bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.14),transparent_36%),radial-gradient(circle_at_90%_20%,rgba(14,165,233,0.1),transparent_34%),linear-gradient(rgba(8,145,178,0.09)_1px,transparent_1px),linear-gradient(90deg,rgba(8,145,178,0.09)_1px,transparent_1px)]"} bg-[size:100%_100%,100%_100%,100%_100%,30px_30px,30px_30px]`} />
       </div>
       {/* Gradient orbs */}
       {dark && (
@@ -351,15 +374,15 @@ function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-10"
+          className="mb-7"
         >
-          <h1 className={`text-4xl sm:text-5xl font-black mb-3 tracking-[0.16em] uppercase bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500 bg-clip-text text-transparent`}>
+          <h1 className={`text-[1.68rem] leading-tight sm:text-5xl font-black mb-2 sm:mb-3 tracking-[0.12em] sm:tracking-[0.16em] uppercase bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 bg-clip-text text-transparent px-2`}>
             CYBER ATTACK VISUALIZER
           </h1>
-          <p className={`text-xl sm:text-2xl font-extrabold ${dark ? "text-sky-300" : "text-sky-700"}`}>
+          <p className={`text-lg sm:text-2xl font-extrabold ${dark ? "text-cyan-300" : "text-sky-700"}`}>
             Have I Been Breached?
           </p>
-          <p className={`mt-2 text-sm sm:text-base ${dark ? "text-slate-300" : "text-slate-600"} max-w-2xl mx-auto`}>
+          <p className={`mt-2 text-[13px] leading-6 sm:text-base ${dark ? "text-slate-300" : "text-slate-600"} max-w-2xl mx-auto px-2`}>
             Check if your email, phone, Aadhaar, PAN, IP or URL has been exposed in a data breach.
           </p>
         </motion.div>
@@ -369,8 +392,14 @@ function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-8 flex flex-wrap justify-center gap-2"
+          className="mb-5 rounded-[26px] border p-2.5 sm:p-3 backdrop-blur-2xl shadow-[0_22px_60px_rgba(0,0,0,.22)]"
+          style={{
+            background: dark ? "linear-gradient(140deg, rgba(5,18,34,.74), rgba(5,21,37,.58))" : "linear-gradient(140deg, rgba(255,255,255,.76), rgba(240,249,255,.68))",
+            borderColor: dark ? "rgba(56,189,248,.24)" : "rgba(14,165,233,.18)",
+            boxShadow: dark ? "0 24px 64px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06)" : "0 20px 52px rgba(2,132,199,.12), inset 0 1px 0 rgba(255,255,255,.8)"
+          }}
         >
+          <div className="grid grid-cols-2 sm:grid-cols-3 w-full gap-2">
           {SCAN_TYPES.map((type) => {
             const active = selectedType === type;
             const Icon = TYPE_META[type].icon;
@@ -382,19 +411,25 @@ function Home() {
                   setError("");
                   setIdentifier("");
                 }}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm transition-all ${
+                className={`group relative overflow-hidden inline-flex items-center justify-center gap-2 px-3 py-3 rounded-full font-bold text-sm transition-all w-full ${
                   active
-                    ? "bg-[#00C2FF] text-[#0B0F14] shadow-lg shadow-cyan-500/25"
+                    ? "text-[#061522] shadow-lg"
                     : dark 
-                      ? "bg-[#121A22] text-[#8B9BB0] hover:bg-[#182330] border border-[#1F2A36]"
+                      ? "bg-[rgba(7,25,45,.54)] text-[#A7C6DA] hover:bg-[rgba(9,35,61,.76)] border border-[rgba(34,211,238,.2)]"
                       : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 shadow-sm"
                 }`}
+                style={active ? {
+                  background: "linear-gradient(135deg,#7dd3fc 0%,#22d3ee 45%,#0ea5e9 100%)",
+                  boxShadow: "0 10px 30px rgba(14,165,233,.38), inset 0 1px 0 rgba(255,255,255,.55)"
+                } : undefined}
               >
+                <span className="pointer-events-none absolute inset-y-0 -left-1/3 hidden w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[360%] sm:block" />
                 <Icon size={16} />
                 {TYPE_META[type].label}
               </button>
             );
           })}
+          </div>
         </motion.div>
 
         {/* Search Box */}
@@ -402,8 +437,75 @@ function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="glass border rounded-2xl p-5 sm:p-6 shadow-xl mb-8"
+          className="border rounded-[26px] p-4 sm:p-6 shadow-[0_28px_70px_rgba(0,0,0,.25)] mb-6 backdrop-blur-3xl"
+          style={{
+            background: dark ? "linear-gradient(145deg, rgba(5,20,36,.84), rgba(7,25,45,.72))" : "linear-gradient(145deg, rgba(255,255,255,.86), rgba(239,246,255,.76))",
+            borderColor: dark ? "rgba(56,189,248,.3)" : "rgba(8,145,178,.2)",
+            boxShadow: dark ? "0 26px 72px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.05)" : "0 20px 58px rgba(2,132,199,.12), inset 0 1px 0 rgba(255,255,255,.86)"
+          }}
         >
+          <div className="mb-4 sm:mb-5 pb-4 border-b" style={{ borderColor: "var(--border)" }}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-2.5 text-left">
+                <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border"
+                  style={{
+                    background: dark ? "rgba(8,32,55,.62)" : "rgba(226,242,255,.7)",
+                    borderColor: dark ? "rgba(56,189,248,.34)" : "rgba(14,165,233,.24)"
+                  }}
+                >
+                  <Database size={16} className="text-cyan-300" />
+                </span>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: "var(--text-muted)" }}>
+                    Scan Source
+                  </p>
+                  <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>
+                    {selectedType === "AADHAAR" || selectedType === "PAN"
+                      ? "Local DB required for Aadhaar & PAN"
+                      : useLocalDb ? "Offline local database selected" : "Live API lookup selected"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setUseLocalDb(!useLocalDb)}
+                disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
+                aria-label="Toggle scan source"
+                aria-pressed={!useLocalDb}
+                className={`relative inline-flex items-center rounded-full p-1 transition-all duration-300 ${
+                  (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                }`}
+                style={{
+                  width: 146,
+                  height: 46,
+                  border: dark ? "1px solid rgba(125,211,252,.34)" : "1px solid rgba(14,165,233,.26)",
+                  background: !useLocalDb
+                    ? "linear-gradient(135deg, #22c55e 0%, #16a34a 54%, #0f766e 100%)"
+                    : "linear-gradient(135deg, #38bdf8 0%, #06b6d4 52%, #2563eb 100%)",
+                  boxShadow: !useLocalDb
+                    ? "0 10px 28px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.55)"
+                    : "0 10px 28px rgba(14,165,233,.32), inset 0 1px 0 rgba(255,255,255,.55)"
+                }}
+              >
+                <span className="absolute left-3 text-[10px] font-black tracking-[0.1em] text-white/90">
+                  {useLocalDb ? "OFF" : "ON"}
+                </span>
+                <motion.span
+                  animate={{ x: !useLocalDb ? 98 : 0 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-[0_5px_16px_rgba(0,0,0,.2)]"
+                >
+                  <span className="h-5 w-5 rounded-full" style={{
+                    background: !useLocalDb
+                      ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+                      : "linear-gradient(135deg, #22d3ee 0%, #2563eb 100%)"
+                  }} />
+                </motion.span>
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
@@ -413,13 +515,22 @@ function Home() {
               placeholder={TYPE_META[selectedType].placeholder}
               disabled={loading}
               maxLength={maxLengthByType(selectedType)}
-              className={`flex-1 px-4 sm:px-5 py-4 rounded-xl border outline-none transition glass-input ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`flex-1 px-4 sm:px-5 py-4 rounded-2xl border outline-none transition glass-input text-base ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              style={{
+                background: dark ? "rgba(2,16,30,.76)" : undefined,
+                borderColor: dark ? "rgba(56,189,248,.34)" : undefined
+              }}
             />
             <button
               onClick={handleScan}
               disabled={loading}
-              className="px-8 py-4 rounded-xl font-bold transition flex items-center justify-center gap-2 whitespace-nowrap bg-gradient-to-r from-[#00C2FF] to-[#007BFF] text-white disabled:opacity-50 hover:brightness-110 shadow-[0_14px_28px_rgba(0,194,255,.18)]"
+              className="group relative overflow-hidden px-8 py-4 rounded-2xl font-bold transition flex items-center justify-center gap-2 whitespace-nowrap text-white disabled:opacity-50 hover:brightness-110 shadow-[0_16px_30px_rgba(16,185,129,.28)] min-h-[56px]"
+              style={{
+                background: "linear-gradient(135deg, #38bdf8 0%, #06b6d4 48%, #2563eb 100%)",
+                boxShadow: "0 16px 34px rgba(14,165,233,.35), inset 0 1px 0 rgba(255,255,255,.55)"
+              }}
             >
+              <span className="pointer-events-none absolute inset-y-0 -left-1/3 hidden w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[360%] sm:block" />
               {loading ? (
                 <>
                   <RefreshCw size={18} className="animate-spin" />
@@ -436,39 +547,20 @@ function Home() {
 
           {/* Progress bar */}
           {loading && scanning > 0 && (
-            <div className="mt-4 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
+            <div className="mt-4 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${scanning}%` }}
-                className="h-full bg-[#00C2FF]"
+                className="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500"
               />
             </div>
           )}
 
           {error && (
-            <div className="mt-4 px-4 py-3 rounded-lg text-sm font-medium bg-red-500/10 text-red-300 border border-red-500/20">
+            <div className="mt-4 px-4 py-3 rounded-xl text-sm font-medium bg-red-600/20 text-red-200 border border-red-500/35 shadow-[0_0_26px_rgba(220,38,38,.22)]">
               {error}
             </div>
           )}
-
-          {/* Mode Toggle */}
-          <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
-            <div className="flex items-center gap-3 flex-col sm:flex-row">
-              <button
-                onClick={() => setUseLocalDb(!useLocalDb)}
-                disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
-                className={`glass-btn inline-flex items-center gap-2 ${(selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                <Database size={16} />
-                {useLocalDb ? "Local DB" : "Live API"}
-              </button>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                {selectedType === "AADHAAR" || selectedType === "PAN"
-                  ? "Local DB required for Aadhaar & PAN"
-                  : useLocalDb ? "Using offline database" : "Using live lookup"}
-              </span>
-            </div>
-          </div>
         </motion.div>
 
         {/* Info Cards */}
@@ -476,7 +568,7 @@ function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center mb-4 sm:mb-6"
         >
           {[
             { label: "6 Scan Types", note: "Email, Phone, IP, Aadhaar, PAN, URL" },
@@ -485,8 +577,14 @@ function Home() {
           ].map((item, idx) => (
             <div
               key={idx}
-              className="glass border rounded-xl p-3 sm:p-4"
+              className="group relative overflow-hidden border rounded-2xl p-3.5 sm:p-4 backdrop-blur-xl"
+              style={{
+                background: dark ? "rgba(5,20,36,.7)" : "rgba(255,255,255,.74)",
+                borderColor: dark ? "rgba(56,189,248,.32)" : "rgba(8,145,178,.16)",
+                boxShadow: dark ? "0 14px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05)" : "0 10px 28px rgba(8,145,178,.1), inset 0 1px 0 rgba(255,255,255,.85)"
+              }}
             >
+              <span className="pointer-events-none absolute inset-y-0 -left-1/3 hidden w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[360%] sm:block" />
               <p className="font-bold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
                 {item.label}
               </p>
@@ -501,19 +599,36 @@ function Home() {
       {/* Result Modal */}
       <AnimatePresence>
         {isOpen && result && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-4 backdrop-blur-xl sm:p-6 modal-overlay">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: useLiteMotion ? 0.14 : 0.22, ease: "easeOut" }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-2 sm:px-4 pt-4 pb-2 sm:py-4 bg-black/35 backdrop-blur-[8px] sm:backdrop-blur-xl sm:p-6 modal-overlay"
+            style={{
+              backdropFilter: useLiteMotion ? "blur(8px)" : undefined,
+              WebkitBackdropFilter: useLiteMotion ? "blur(8px)" : undefined
+            }}
+          >
             <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className={`glass-2 border w-full max-w-5xl rounded-[30px] shadow-2xl overflow-hidden relative max-h-[94vh] flex flex-col modal-card`}
+              initial={useLiteMotion ? { opacity: 0, y: 24 } : { opacity: 0, y: 48, scale: 0.97 }}
+              animate={useLiteMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={useLiteMotion ? { opacity: 0, y: 20 } : { opacity: 0, y: 40, scale: 0.98 }}
+              transition={useLiteMotion ? { duration: 0.18, ease: "easeOut" } : { type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}
+              className={`border w-full max-w-5xl rounded-t-[30px] sm:rounded-[30px] overflow-hidden relative h-[90dvh] sm:h-auto sm:max-h-[94vh] flex flex-col modal-card`}
+              style={{
+                background: dark ? "linear-gradient(180deg, rgba(5,20,16,.95), rgba(6,16,14,.92))" : "linear-gradient(180deg, rgba(255,255,255,.97), rgba(248,250,252,.95))",
+                borderColor: palette.border,
+                boxShadow: palette.glow
+              }}
             >
+              <div className="absolute left-1/2 top-2 z-20 h-1.5 w-12 -translate-x-1/2 rounded-full bg-white/35 sm:hidden" />
+
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute right-4 top-4 z-20 rounded-full p-2 transition shadow-lg"
+                className="absolute right-3 top-3 z-20 rounded-full p-2 transition shadow-lg"
                 style={{ 
-                  backgroundColor: dark ? "rgba(15, 23, 42, 0.8)" : "rgba(255, 255, 255, 0.9)",
+                  backgroundColor: dark ? "rgba(2, 10, 8, 0.86)" : "rgba(255, 255, 255, 0.9)",
                   color: dark ? "#f1f5f9" : "#334155"
                 }}
                 aria-label="Close result"
@@ -524,26 +639,38 @@ function Home() {
               <motion.div
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-5 py-5 pr-16 text-white"
+                className="px-4 sm:px-5 py-4 sm:py-5 pr-14 sm:pr-16 text-white"
                 style={{ background: palette.header }}
               >
-                <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider opacity-75">Scan Result</p>
-                    <h2 className="text-xl sm:text-2xl font-black mt-1">{maskValue(result.identifier)}</h2>
+                    <h2 className="text-lg sm:text-2xl font-black mt-1 break-all">{maskValue(result.identifier)}</h2>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm opacity-90">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-sm opacity-95">
                   <span>{TYPE_META[result.type]?.label}</span>
                   <span>•</span>
                   <span>{result.source}</span>
                   <span>•</span>
                   <span>Assessment: {displayStatus(result)}</span>
                 </div>
+                <div className="mt-3 inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-bold tracking-wide"
+                     style={{
+                       background: resultTone === "high" ? "rgba(127,29,29,.34)" : resultTone === "moderate" ? "rgba(120,53,15,.32)" : "rgba(6,95,70,.32)",
+                       borderColor: resultTone === "high" ? "rgba(254,202,202,.46)" : resultTone === "moderate" ? "rgba(253,230,138,.44)" : "rgba(167,243,208,.42)"
+                     }}>
+                  {resultTone === "high" ? "Critical Exposure" : resultTone === "moderate" ? "Moderate Risk" : "No Confirmed Exposure"}
+                </div>
               </motion.div>
 
               {/* Content */}
-              <div className="flex-1 min-h-0 p-4 sm:p-5 space-y-4 sm:space-y-5 pt-6 sm:pt-6 overflow-y-auto">
+              <motion.div
+                initial={useLiteMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: useLiteMotion ? 0.16 : 0.28, delay: useLiteMotion ? 0 : 0.08, ease: "easeOut" }}
+                className="flex-1 min-h-0 p-3.5 sm:p-5 space-y-4 sm:space-y-5 pt-4 sm:pt-5 overflow-y-auto"
+              >
                 {/* Status */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {[
@@ -554,12 +681,12 @@ function Home() {
                   ].map((item) => {
                     const ToneIcon = item.icon;
                     const toneClass = {
-                      red: dark ? "bg-red-950/40 text-red-300 border-red-900/60" : "bg-red-50 text-red-700 border-red-200",
-                      amber: dark ? "bg-amber-950/40 text-amber-300 border-amber-900/60" : "bg-amber-50 text-amber-700 border-amber-200",
-                      green: dark ? "bg-emerald-950/40 text-emerald-300 border-emerald-900/60" : "bg-emerald-50 text-emerald-700 border-emerald-200",
-                      cyan: dark ? "bg-cyan-950/40 text-cyan-300 border-cyan-900/60" : "bg-cyan-50 text-cyan-700 border-cyan-200",
-                      blue: dark ? "bg-sky-950/40 text-sky-300 border-sky-900/60" : "bg-sky-50 text-sky-700 border-sky-200",
-                      slate: dark ? "bg-slate-800 text-slate-200 border-slate-700" : "bg-slate-100 text-slate-700 border-slate-200"
+                      red: dark ? "bg-red-950/55 text-red-200 border-red-900/70 shadow-[0_0_26px_rgba(220,38,38,.24)]" : "bg-red-50 text-red-700 border-red-200",
+                      amber: dark ? "bg-amber-950/50 text-amber-200 border-amber-900/70 shadow-[0_0_24px_rgba(245,158,11,.2)]" : "bg-amber-50 text-amber-700 border-amber-200",
+                      green: dark ? "bg-emerald-950/55 text-emerald-200 border-emerald-900/70 shadow-[0_0_24px_rgba(16,185,129,.2)]" : "bg-emerald-50 text-emerald-700 border-emerald-200",
+                      cyan: dark ? "bg-cyan-950/45 text-cyan-200 border-cyan-900/60" : "bg-cyan-50 text-cyan-700 border-cyan-200",
+                      blue: dark ? "bg-sky-950/45 text-sky-200 border-sky-900/60" : "bg-sky-50 text-sky-700 border-sky-200",
+                      slate: dark ? "bg-slate-900/80 text-slate-200 border-slate-700" : "bg-slate-100 text-slate-700 border-slate-200"
                     }[item.tone];
 
                     return (
@@ -574,11 +701,20 @@ function Home() {
                   })}
                 </div>
 
-                <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
+                <div className="rounded-2xl border p-3 sm:p-4" style={{
+                  borderColor: palette.border,
+                  background: dark ? "rgba(2,14,10,.75)" : "rgba(255,255,255,.82)"
+                }}>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <p className="text-xs font-bold tracking-wider uppercase" style={{ color: "var(--text-muted)" }}>Overall Risk</p>
+                    <p className="text-sm font-black" style={{ color: "var(--text-primary)" }}>{clampRisk(result.risk)}%</p>
+                  </div>
+                  <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border)" }}>
                   <div
                     className={`h-full rounded-full transition-all ${clampRisk(result.risk) > 70 ? "bg-red-500" : clampRisk(result.risk) > 40 ? "bg-amber-500" : "bg-emerald-500"}`}
                     style={{ width: `${clampRisk(result.risk)}%` }}
                   />
+                </div>
                 </div>
 
                 {/* Breach Details */}
@@ -614,9 +750,9 @@ function Home() {
                       <p className="font-black">Compromised Data</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {(Array.isArray(result.compromisedData) ? result.compromisedData : [result.compromisedData]).map((item) => (
+                      {(Array.isArray(result.compromisedData) ? result.compromisedData : [result.compromisedData]).map((item, idx) => (
                         <span
-                          key={item}
+                          key={`${item}-${idx}`}
                           className="glass-badge px-3 py-1.5 rounded-full text-xs font-bold"
                         >
                           {item}
@@ -663,7 +799,14 @@ function Home() {
                   </div>
                 </div>
 
-                <div className="glass-card-compact rounded-2xl p-4 sm:p-5 border">
+                <div className="glass-card-compact rounded-2xl p-4 sm:p-5 border" style={{
+                  borderColor: palette.border,
+                  boxShadow: resultTone === "high"
+                    ? "0 0 26px rgba(220,38,38,.2)"
+                    : resultTone === "moderate"
+                      ? "0 0 24px rgba(245,158,11,.18)"
+                      : "0 0 24px rgba(16,185,129,.18)"
+                }}>
                   <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Security Guidance</p>
                   <p className="mt-2 text-sm leading-6" style={{ color: "var(--text-secondary)" }}>
                     {result.status === "EXPOSED"
@@ -673,15 +816,15 @@ function Home() {
                         : "Keep your identity hygiene strong: use unique passwords, enable MFA, and avoid reusing the same credential across services."}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Footer */}
       {!isOpen && (
-      <footer className="relative mt-auto shrink-0 pt-2">
+      <footer className="relative mt-auto shrink-0 pt-6 sm:pt-8">
         <div className="mx-auto max-w-5xl px-1 sm:px-2">
           <div className="rounded-full border px-4 py-2.5 backdrop-blur-md glass" style={{ backgroundColor: "rgba(var(--accent-rgb), 0.05)", color: "var(--text-secondary)", borderColor: "var(--border)" }}>
             <div className="flex flex-col items-center justify-center gap-1 text-center">
