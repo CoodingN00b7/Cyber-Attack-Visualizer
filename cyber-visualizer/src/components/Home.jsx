@@ -437,13 +437,34 @@ function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="border rounded-[26px] p-4 sm:p-6 shadow-[0_28px_70px_rgba(0,0,0,.25)] mb-6 backdrop-blur-3xl"
+          className="relative border rounded-[26px] p-4 pt-16 sm:p-6 sm:pt-6 shadow-[0_28px_70px_rgba(0,0,0,.25)] mb-6 backdrop-blur-3xl"
           style={{
             background: dark ? "linear-gradient(145deg, rgba(5,20,36,.84), rgba(7,25,45,.72))" : "linear-gradient(145deg, rgba(255,255,255,.86), rgba(239,246,255,.76))",
             borderColor: dark ? "rgba(56,189,248,.3)" : "rgba(8,145,178,.2)",
             boxShadow: dark ? "0 26px 72px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.05)" : "0 20px 58px rgba(2,132,199,.12), inset 0 1px 0 rgba(255,255,255,.86)"
           }}
         >
+          <button
+            type="button"
+            onClick={() => setUseLocalDb(!useLocalDb)}
+            disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
+            aria-label={useLocalDb ? "Switch to Live API source" : "Switch to local SQLite source"}
+            className={`absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 sm:right-6 sm:top-5 sm:h-12 sm:w-12 ${
+              (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+            }`}
+            style={{
+              borderColor: !useLocalDb ? "rgba(74,222,128,.5)" : "rgba(56,189,248,.5)",
+              background: !useLocalDb
+                ? "linear-gradient(135deg, #22c55e 0%, #16a34a 54%, #0f766e 100%)"
+                : "linear-gradient(135deg, #38bdf8 0%, #06b6d4 52%, #2563eb 100%)",
+              boxShadow: !useLocalDb
+                ? "0 0 0 1px rgba(74,222,128,.18), 0 12px 30px rgba(34,197,94,.45), inset 0 1px 0 rgba(255,255,255,.55)"
+                : "0 0 0 1px rgba(56,189,248,.2), 0 12px 30px rgba(14,165,233,.42), inset 0 1px 0 rgba(255,255,255,.55)"
+            }}
+          >
+            <Database size={18} className="text-white drop-shadow-[0_2px_6px_rgba(2,6,23,.35)]" />
+          </button>
+
           <div className="mb-4 sm:mb-5 pb-4 border-b" style={{ borderColor: "var(--border)" }}>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-2.5 text-left">
@@ -466,38 +487,6 @@ function Home() {
                   </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setUseLocalDb(!useLocalDb)}
-                disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
-                aria-label="Toggle scan source"
-                aria-pressed={!useLocalDb}
-                className={`relative mt-1 inline-flex h-9 w-[108px] self-start items-center rounded-full p-1 transition-all duration-300 sm:mt-0 sm:h-10 sm:w-[120px] sm:self-center ${!useLocalDb ? "justify-end" : "justify-start"} ${
-                  (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
-                }`}
-                style={{
-                  border: dark ? "1px solid rgba(125,211,252,.34)" : "1px solid rgba(14,165,233,.26)",
-                  background: !useLocalDb
-                    ? "linear-gradient(135deg, #22c55e 0%, #16a34a 54%, #0f766e 100%)"
-                    : "linear-gradient(135deg, #38bdf8 0%, #06b6d4 52%, #2563eb 100%)",
-                  boxShadow: !useLocalDb
-                    ? "0 10px 28px rgba(34,197,94,.35), inset 0 1px 0 rgba(255,255,255,.55)"
-                    : "0 10px 28px rgba(14,165,233,.32), inset 0 1px 0 rgba(255,255,255,.55)"
-                }}
-              >
-                <motion.span
-                  layout
-                  transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-[0_5px_16px_rgba(0,0,0,.2)] sm:h-8 sm:w-8"
-                >
-                  <span className="h-4 w-4 rounded-full sm:h-[18px] sm:w-[18px]" style={{
-                    background: !useLocalDb
-                      ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
-                      : "linear-gradient(135deg, #22d3ee 0%, #2563eb 100%)"
-                  }} />
-                </motion.span>
-              </button>
             </div>
           </div>
 
