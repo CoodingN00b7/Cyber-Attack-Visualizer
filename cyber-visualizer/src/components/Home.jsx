@@ -437,7 +437,7 @@ function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="relative border rounded-[26px] p-4 pt-16 sm:p-6 sm:pt-6 shadow-[0_28px_70px_rgba(0,0,0,.25)] mb-6 backdrop-blur-3xl"
+          className="relative border rounded-[26px] p-4 sm:p-6 shadow-[0_28px_70px_rgba(0,0,0,.25)] mb-6 backdrop-blur-3xl"
           style={{
             background: dark ? "linear-gradient(145deg, rgba(5,20,36,.84), rgba(7,25,45,.72))" : "linear-gradient(145deg, rgba(255,255,255,.86), rgba(239,246,255,.76))",
             borderColor: dark ? "rgba(56,189,248,.3)" : "rgba(8,145,178,.2)",
@@ -449,7 +449,7 @@ function Home() {
             onClick={() => setUseLocalDb(!useLocalDb)}
             disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
             aria-label={useLocalDb ? "Switch to Live API source" : "Switch to local SQLite source"}
-            className={`absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 sm:right-6 sm:top-5 sm:h-12 sm:w-12 ${
+            className={`absolute -top-5 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300 sm:right-6 sm:-top-6 sm:h-12 sm:w-12 ${
               (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
             }`}
             style={{
