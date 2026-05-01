@@ -98,7 +98,7 @@ export default function LoginPage({ onLogin }) {
       </motion.button>
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-[1440px] grid-cols-1 lg:grid-cols-[1.08fr_0.92fr]">
-        <section className="flex items-center px-5 py-10 sm:px-10 lg:px-14">
+        <section className="order-2 flex items-center px-5 py-8 sm:px-10 lg:order-1 lg:px-14 lg:py-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,7 +137,7 @@ export default function LoginPage({ onLogin }) {
           </motion.div>
         </section>
 
-        <section className="flex items-center justify-center px-5 pb-12 pt-4 sm:px-10 lg:px-14 lg:py-14">
+        <section className="order-1 flex items-center justify-center px-5 pb-8 pt-20 sm:px-10 sm:pb-12 sm:pt-16 lg:order-2 lg:px-14 lg:py-14">
           <motion.div
             initial={{ opacity: 0, y: 28, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
