@@ -80,8 +80,8 @@ export default function App() {
 
   const isGov = user?.role === "government";
   const navShellClass = isHome
-    ? "nav-glass relative z-20 mx-auto mt-3 mb-2 w-[min(1120px,calc(100%-1.5rem))] px-4 sm:px-6 py-3 flex justify-between items-center rounded-full shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-    : "nav-glass relative z-20 mx-auto mt-3 mb-2 w-[min(1120px,calc(100%-1.5rem))] px-4 sm:px-6 py-3 flex justify-between items-center rounded-full";
+    ? "nav-glass relative z-20 mx-auto mt-3 mb-2 w-[min(1120px,calc(100%-1.5rem))] px-4 sm:px-6 py-3 flex justify-between items-center gap-3 sm:gap-4 rounded-[1.75rem] sm:rounded-full shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
+    : "nav-glass relative z-20 mx-auto mt-3 mb-2 w-[min(1120px,calc(100%-1.5rem))] px-4 sm:px-6 py-3 flex justify-between items-center gap-3 sm:gap-4 rounded-[1.75rem] sm:rounded-full";
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300"
@@ -107,11 +107,11 @@ export default function App() {
             className={navShellClass}>
 
             {/* Logo */}
-            <motion.div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/home")}
+            <motion.div className="flex min-w-0 flex-1 items-center gap-3 cursor-pointer" onClick={() => navigate("/home")}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: .98 }}>
               <Shield className="text-sky-500 w-7 h-7" style={{ filter: dark ? "drop-shadow(0 0 8px rgba(56,189,248,.55))" : "drop-shadow(0 0 8px rgba(3,105,161,.28))" }}/>
-              <div>
-                <div className="font-black text-[17px] tracking-widest flex items-center gap-1.5" style={{ color:"var(--text-primary)" }}>
+              <div className="min-w-0">
+                <div className="font-black text-[15px] sm:text-[17px] tracking-[0.12em] sm:tracking-widest leading-tight flex items-center gap-1.5" style={{ color:"var(--text-primary)" }}>
                   Cyber Attack Visualizer
                   {isGov && <span style={{ fontSize:9, fontFamily:"IBM Plex Mono", color:"var(--gov-color)", border:"1px solid rgba(34,211,238,.3)", padding:"2px 6px", borderRadius:6, background:"var(--gov-soft)" }}>GOV</span>}
                 </div>
@@ -122,7 +122,7 @@ export default function App() {
             </motion.div>
 
             {/* Nav items */}
-            <div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+            <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-2">
 
               {/* Theme toggle */}
               <motion.button onClick={toggle} whileHover={{ scale:1.08 }} whileTap={{ scale:.92 }}
@@ -136,21 +136,23 @@ export default function App() {
                 </AnimatePresence>
               </motion.button>
 
-              <Link to="/home"
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${navLink(isActive("/home"))}`}>
-                <HomeIcon size={15}/><span className="hidden md:inline">Scanner</span>
-              </Link>
+              {!isHome && (
+                <Link to="/home"
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${navLink(isActive("/home"))}`}>
+                  <HomeIcon size={15}/><span className="hidden md:inline">Scanner</span>
+                </Link>
+              )}
 
               {user && !user.isGuest && !isGov && (
                 <Link to="/dashboard"
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${navLink(isActive("/dashboard"))}`}>
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${navLink(isActive("/dashboard"))}`}>
                   <LayoutDashboard size={15}/><span className="hidden md:inline">Dashboard</span>
                 </Link>
               )}
 
               {isGov && (
                 <Link to="/gov-dashboard"
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${govLink(isActive("/gov-dashboard"))}`}>
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold tracking-wide transition-all duration-200 ${govLink(isActive("/gov-dashboard"))}`}>
                   <Building2 size={15}/><span className="hidden md:inline">Gov Dashboard</span>
                 </Link>
               )}
