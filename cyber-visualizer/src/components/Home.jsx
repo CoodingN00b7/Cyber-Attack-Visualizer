@@ -449,7 +449,7 @@ function Home() {
             onClick={() => setUseLocalDb(!useLocalDb)}
             disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
             aria-label={useLocalDb ? "Switch to Live API source" : "Switch to local SQLite source"}
-            className={`absolute -top-5 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300 sm:right-6 sm:-top-6 sm:h-12 sm:w-12 ${
+            className={`absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300 sm:right-6 sm:top-6 sm:h-12 sm:w-12 ${
               (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
             }`}
             style={{
