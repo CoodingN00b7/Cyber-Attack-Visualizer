@@ -473,12 +473,10 @@ function Home() {
                 disabled={(selectedType === "AADHAAR" || selectedType === "PAN")}
                 aria-label="Toggle scan source"
                 aria-pressed={!useLocalDb}
-                className={`relative inline-flex items-center rounded-full p-1 transition-all duration-300 ${
+                className={`relative mt-1 inline-flex h-9 w-[108px] self-start items-center rounded-full p-1 transition-all duration-300 sm:mt-0 sm:h-10 sm:w-[120px] sm:self-center ${!useLocalDb ? "justify-end" : "justify-start"} ${
                   (selectedType === "AADHAAR" || selectedType === "PAN") ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
                 }`}
                 style={{
-                  width: 146,
-                  height: 46,
                   border: dark ? "1px solid rgba(125,211,252,.34)" : "1px solid rgba(14,165,233,.26)",
                   background: !useLocalDb
                     ? "linear-gradient(135deg, #22c55e 0%, #16a34a 54%, #0f766e 100%)"
@@ -488,15 +486,12 @@ function Home() {
                     : "0 10px 28px rgba(14,165,233,.32), inset 0 1px 0 rgba(255,255,255,.55)"
                 }}
               >
-                <span className="absolute left-3 text-[10px] font-black tracking-[0.1em] text-white/90">
-                  {useLocalDb ? "OFF" : "ON"}
-                </span>
                 <motion.span
-                  animate={{ x: !useLocalDb ? 98 : 0 }}
+                  layout
                   transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-[0_5px_16px_rgba(0,0,0,.2)]"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-[0_5px_16px_rgba(0,0,0,.2)] sm:h-8 sm:w-8"
                 >
-                  <span className="h-5 w-5 rounded-full" style={{
+                  <span className="h-4 w-4 rounded-full sm:h-[18px] sm:w-[18px]" style={{
                     background: !useLocalDb
                       ? "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
                       : "linear-gradient(135deg, #22d3ee 0%, #2563eb 100%)"
