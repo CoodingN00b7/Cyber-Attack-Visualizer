@@ -819,7 +819,7 @@ function Home() {
               </div>
 
               <div className="text-[9px] sm:text-[10px]" style={{ color: "var(--text-secondary)" }}>
-                <a href="https://github.com/CoodingN00b7" target="_blank" rel="noreferrer" className="font-semibold transition-colors" style={{ color: "var(--accent)" }}>
+                <a href="https://github.com/fardeenakmal" target="_blank" rel="noreferrer" className="font-semibold transition-colors" style={{ color: "var(--accent)" }}>
                   Developed By Fardeen Akmal
                 </a>
               </div>
